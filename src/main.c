@@ -5,22 +5,26 @@ void verificarPosicao() {
 
 int verificarVitoria(char matriz[3][3], int *win) {
   for (int i = 0; i < 3; i++) {
-    if (matriz[i][0] == matriz[i][1] && matriz[i][1] == matriz[i][2] || matriz[0][i] == matriz[1][i] && matriz[1][i] == matriz[2][i]){
-      *win = 1;
-      return *win;
-      //return printf("O jogador %c venceu\n", escolhaJogador);
+    // Verifica linhas
+    if (matriz[i][0] == matriz[i][1] && matriz[i][1] == matriz[i][2]) {
+        *win = 1;
+        return *win;
     }
+    // Verifica colunas
+    else if (matriz[0][i] == matriz[1][i] && matriz[1][i] == matriz[2][i]) {
+        *win = 1;
+        return *win;
+    }
+      //Verificando diagonais
     else if (matriz[0][0] == matriz[1][1] && matriz[1][1] == matriz[2][2] || matriz[0][2] == matriz[1][1] && matriz[1][1] == matriz[2][0]){
       *win = 1;
       return *win;
-      //return printf("O jogador %c venceu\n", escolhaJogador);
-    } else{
-      return *win;
     }
+    }
+  return *win;
   }
-}
 
-  
+
   void imprimirMatriz(char matriz[3][3]) {
       for (int i = 0; i < 3; i++) {
           for (int j = 0; j < 3; j++) {
@@ -50,6 +54,7 @@ int main() {
     }
 
     printf("Vamos começar o jogo!\n");
+    imprimirMatriz(matriz);
 
     while (ganhou != 1)
     {
@@ -66,7 +71,7 @@ int main() {
         } else if (posicao > 6 && posicao <= 9){
             matriz[2][posicao-7] = escolhaJogador;
             verificarVitoria(matriz, &ganhou);
-            
+
         } else {
             printf("Posição invalida, escolha um valor entre 1 e 9 :(\n");
         }
@@ -75,7 +80,7 @@ int main() {
         if (ganhou == 1){
           printf("O jogador %c venceu\n", escolhaJogador);
         }
-          
+
         }
 
         printf("\n");
