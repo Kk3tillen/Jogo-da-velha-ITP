@@ -65,7 +65,6 @@ int verificaEAdicionaPosicao(char matriz[3][3], int posicao, char simbolo) {
 
 void posicaoJogadorDois(char matriz[3][3], char jogadorUm, char jogadorDois) {
     if (tentativaDeBloqueio(matriz, jogadorUm, jogadorDois)) {
-        printf("Jogador dois bloqueou uma jogada.\n");
         return;
     }
     int posicaoDeJogada;
