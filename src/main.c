@@ -1,42 +1,136 @@
-void verificarPosicao() {
+#include <stdio.h>
+#include <stdlib.h>
 
+// Declaração da função tentativaDeBloqueio
+int tentativaDeBloqueio(char matriz[3][3], char jogadorUm, char jogadorDois);
+
+void imprimirMatriz(char matriz[3][3]) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            printf("%c ", matriz[i][j]);  
+        }
+        printf("\n");  
+    }
 }
 
-
-int verificarVitoria(char matriz[3][3], int *win) {
-  for (int i = 0; i < 3; i++) {
+char verificarVitoria(char matriz[3][3]) {
     // Verifica linhas
-    if (matriz[i][0] == matriz[i][1] && matriz[i][1] == matriz[i][2]) {
-        *win = 1;
-        return *win;
+    for (int i = 0; i < 3; i++) {
+        if (matriz[i][0] == matriz[i][1] && matriz[i][1] == matriz[i][2]) {
+            return matriz[i][0]; // Retorna o símbolo do vencedor
+        }
     }
+
     // Verifica colunas
-    else if (matriz[0][i] == matriz[1][i] && matriz[1][i] == matriz[2][i]) {
-        *win = 1;
-        return *win;
+    for (int i = 0; i < 3; i++) {
+        if (matriz[0][i] == matriz[1][i] && matriz[1][i] == matriz[2][i]) {
+            return matriz[0][i]; // Retorna o símbolo do vencedor
+        }
     }
-      //Verificando diagonais
-    else if (matriz[0][0] == matriz[1][1] && matriz[1][1] == matriz[2][2] || matriz[0][2] == matriz[1][1] && matriz[1][1] == matriz[2][0]){
-      *win = 1;
-      return *win;
-    }
-    }
-  return *win;
-  }
 
+    // Verifica diagonais
+    if (matriz[0][0] == matriz[1][1] && matriz[1][1] == matriz[2][2]) {
+        return matriz[0][0]; // Retorna o símbolo do vencedor
+    }
+    if (matriz[0][2] == matriz[1][1] && matriz[1][1] == matriz[2][0]) {
+        return matriz[0][2]; // Retorna o símbolo do vencedor
+    }
 
-  void imprimirMatriz(char matriz[3][3]) {
-      for (int i = 0; i < 3; i++) {
-          for (int j = 0; j < 3; j++) {
-              printf("%c ", matriz[i][j]);  
-          }
-          printf("\n");  
-      }
-  }
+    // Se não houver vitória, retorna 0
+    return 0;
+}
+
+int verificaEAdicionaPosicao(char matriz[3][3], int posicao, char simbolo) {
+    char c = posicao + '0'; // Converte o número para o caractere correspondente
+    if (posicao > 0 && posicao <= 3) {
+        if (c == matriz[0][posicao - 1]) {
+            matriz[0][posicao - 1] = simbolo;
+            return 1; 
+        }
+    } 
+    else if (posicao > 3 && posicao <= 6) {
+        if (c == matriz[1][posicao - 4]) {
+            matriz[1][posicao - 4] = simbolo;
+            return 1; 
+        }
+    } 
+    else if (posicao > 6 && posicao <= 9) {
+        if (c == matriz[2][posicao - 7]) {
+            matriz[2][posicao - 7] = simbolo;
+            return 1; 
+        }
+    }
+    return 0; 
+}
+
+void posicaoJogadorDois(char matriz[3][3], char jogadorUm, char jogadorDois) {
+    if (tentativaDeBloqueio(matriz, jogadorUm, jogadorDois)) {
+        printf("Jogador dois bloqueou uma jogada.\n");
+        return;
+    }
+    int posicaoDeJogada;
+    do {
+        posicaoDeJogada = rand() % 9 + 1;
+    } while (!verificaEAdicionaPosicao(matriz, posicaoDeJogada, jogadorDois));
+}
+
+int tentativaDeBloqueio(char matriz[3][3], char jogadorUm, char jogadorDois) {
+
+    // Verifica linhas para bloqueio
+    for (int i = 0; i < 3; i++) {
+        if (matriz[i][0] == jogadorUm && matriz[i][1] == jogadorUm && matriz[i][2] != jogadorUm && matriz[i][2] != jogadorDois) {
+            matriz[i][2] = jogadorDois;
+            return 1;
+        }
+        if (matriz[i][0] == jogadorUm && matriz[i][2] == jogadorUm && matriz[i][1] != jogadorUm && matriz[i][1] != jogadorDois) {
+            matriz[i][1] = jogadorDois;
+            return 1;
+        }
+        if (matriz[i][1] == jogadorUm && matriz[i][2] == jogadorUm && matriz[i][0] != jogadorUm && matriz[i][0] != jogadorDois) {
+            matriz[i][0] = jogadorDois;
+            return 1;
+        }
+    }
+
+    // Verifica colunas para bloqueio
+    for (int i = 0; i < 3; i++) {
+        if (matriz[0][i] == jogadorUm && matriz[1][i] == jogadorUm && matriz[2][i] != jogadorUm && matriz[2][i] != jogadorDois) {
+            matriz[2][i] = jogadorDois;
+            return 1;
+        }
+        if (matriz[0][i] == jogadorUm && matriz[2][i] == jogadorUm && matriz[1][i] != jogadorUm && matriz[1][i] != jogadorDois) {
+            matriz[1][i] = jogadorDois;
+            return 1;
+        }
+        if (matriz[1][i] == jogadorUm && matriz[2][i] == jogadorUm && matriz[0][i] != jogadorUm && matriz[0][i] != jogadorDois) {
+            matriz[0][i] = jogadorDois;
+            return 1;
+        }
+    }
+
+    // Verifica diagonais para bloqueio
+    if (matriz[0][0] == jogadorUm && matriz[1][1] == jogadorUm && matriz[2][2] != jogadorUm && matriz[2][2] != jogadorDois) {
+        matriz[2][2] = jogadorDois;
+        return 1;
+    }
+    if (matriz[0][0] == jogadorUm && matriz[2][2] == jogadorUm && matriz[1][1] != jogadorUm && matriz[1][1] != jogadorDois) {
+        matriz[1][1] = jogadorDois;
+        return 1;
+    }
+    if (matriz[1][1] == jogadorUm && matriz[2][2] == jogadorUm && matriz[0][0] != jogadorUm && matriz[0][0] != jogadorDois) {
+        matriz[0][0] = jogadorDois;
+        return 1;
+    }
+    
+    // Se não houver jogada de bloqueio, retorna 0
+    return 0;
+}
 
 int main() {
-    char escolhaJogador;
+    char jogadorUm;
+    char jogadorDois;
     int ganhou = 0;
+    int jogadas = 0;
     int posicao = 0;
 
     char matriz[3][3] = {
@@ -46,44 +140,53 @@ int main() {
     };
 
     printf("Escolha uma das opções para começar o jogo:\n1- X\n2- O\n");
-    scanf(" %c", &escolhaJogador); 
+    scanf(" %c", &jogadorUm); 
 
-    while (escolhaJogador != 'X' && escolhaJogador != 'O' && escolhaJogador != 'x' && escolhaJogador != 'o') {
+    while (jogadorUm != 'X' && jogadorUm != 'O' && jogadorUm != 'x' && jogadorUm != 'o') {
         printf("Opção inválida! :( Escolha uma das opções possíveis para iniciarmos:\n1- X\n2- O\n");
-        scanf(" %c", &escolhaJogador); 
+        scanf(" %c", &jogadorUm); 
+    }
+
+    if (jogadorUm == 'X' || jogadorUm == 'x') {
+        jogadorDois = 'O';
+    } else {
+        jogadorDois = 'X';
     }
 
     printf("Vamos começar o jogo!\n");
     imprimirMatriz(matriz);
 
-    while (ganhou != 1)
-    {
-
+    while (1) {
         printf("Escolha uma posição de 1 à 9: ");
         scanf("%d", &posicao);
 
-        if(posicao > 0 && posicao <= 3){
-            matriz[0][posicao-1] = escolhaJogador;
-            verificarVitoria(matriz, &ganhou);
-        } else if(posicao > 3 && posicao <= 6){
-            matriz[1][posicao-4] = escolhaJogador;
-            verificarVitoria(matriz, &ganhou);
-        } else if (posicao > 6 && posicao <= 9){
-            matriz[2][posicao-7] = escolhaJogador;
-            verificarVitoria(matriz, &ganhou);
-
-        } else {
-            printf("Posição invalida, escolha um valor entre 1 e 9 :(\n");
+        // Verificar se a posição está ocupada
+        if (verificaEAdicionaPosicao(matriz, posicao, jogadorUm) == 0) {
+            printf("Posição já ocupada! Tente novamente.\n");
+            continue; // volta ao início do loop
         }
 
-        imprimirMatriz(matriz);
-        if (ganhou == 1){
-          printf("O jogador %c venceu\n", escolhaJogador);
+        imprimirMatriz(matriz); // Imprime a matriz atualizada
+        printf("***************************************************\n");
+
+        // Verifica se o jogador 1 venceu
+        if ((ganhou = verificarVitoria(matriz)) != 0) {
+            printf("O jogador %c venceu!\n", ganhou);
+            break;
         }
 
+        // Jogada do jogador 2
+        posicaoJogadorDois(matriz, jogadorUm, jogadorDois);
+        imprimirMatriz(matriz); // Imprime a matriz após o jogador dois jogar
+
+        // Verifica se o jogador 2 venceu
+        if ((ganhou = verificarVitoria(matriz)) != 0) {
+            printf("O jogador %c venceu!\n", ganhou);
+            break;
         }
 
-        printf("\n");
+        jogadas++;
+    }
 
     return 0;
 }
