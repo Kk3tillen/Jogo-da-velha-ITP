@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h> // Para usar srand e rand
 
 // Declaração da função tentativaDeBloqueio
-int tentativaDeBloqueio(char matriz[3][3], char jogadorUm, char jogadorDois);
+int tentativaDeBloqueio(char **matriz, char jogadorUm, char jogadorDois);
 
-void imprimirMatriz(char matriz[3][3]) {
+void imprimirMatriz(char **matriz) {
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             printf("%c ", matriz[i][j]);  
@@ -13,7 +14,7 @@ void imprimirMatriz(char matriz[3][3]) {
     }
 }
 
-char verificarVitoria(char matriz[3][3]) {
+char verificarVitoria(char **matriz) {
     // Verifica linhas
     for (int i = 0; i < 3; i++) {
         if (matriz[i][0] == matriz[i][1] && matriz[i][1] == matriz[i][2]) {
@@ -40,7 +41,7 @@ char verificarVitoria(char matriz[3][3]) {
     return 0;
 }
 
-int verificaEAdicionaPosicao(char matriz[3][3], int posicao, char simbolo) {
+int verificaEAdicionaPosicao(char **matriz, int posicao, char simbolo) {
     char c = posicao + '0'; // Converte o número para o caractere correspondente
     if (posicao > 0 && posicao <= 3) {
         if (c == matriz[0][posicao - 1]) {
@@ -63,7 +64,7 @@ int verificaEAdicionaPosicao(char matriz[3][3], int posicao, char simbolo) {
     return 0; 
 }
 
-void posicaoJogadorDois(char matriz[3][3], char jogadorUm, char jogadorDois) {
+void posicaoJogadorDois(char **matriz, char jogadorUm, char jogadorDois) {
     if (tentativaDeBloqueio(matriz, jogadorUm, jogadorDois)) {
         return;
     }
@@ -73,7 +74,7 @@ void posicaoJogadorDois(char matriz[3][3], char jogadorUm, char jogadorDois) {
     } while (!verificaEAdicionaPosicao(matriz, posicaoDeJogada, jogadorDois));
 }
 
-int tentativaDeBloqueio(char matriz[3][3], char jogadorUm, char jogadorDois) {
+int tentativaDeBloqueio(char **matriz, char jogadorUm, char jogadorDois) {
 
     // Verifica linhas para bloqueio
     for (int i = 0; i < 3; i++) {
@@ -125,6 +126,17 @@ int tentativaDeBloqueio(char matriz[3][3], char jogadorUm, char jogadorDois) {
     return 0;
 }
 
+int verificarEmpate(char **matriz) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (matriz[i][j] != 'X' && matriz[i][j] != 'O') {
+                return 0; // Ainda há posições vazias
+            }
+        }
+    }
+    return 1; // Todas as posições estão preenchidas (empate)
+}
+
 int main() {
     char jogadorUm;
     char jogadorDois;
@@ -132,11 +144,26 @@ int main() {
     int jogadas = 0;
     int posicao = 0;
 
-    char matriz[3][3] = {
+    // Inicializa o gerador de números aleatórios
+    srand(time(NULL));
+
+    // Alocação dinâmica da matriz
+    char **matriz = (char **)malloc(3 * sizeof(char *));
+    for (int i = 0; i < 3; i++) {
+        matriz[i] = (char *)malloc(3 * sizeof(char));
+    }
+
+    // Inicialização da matriz
+    char valoresIniciais[3][3] = {
         {'1', '2', '3'},
         {'4', '5', '6'},
         {'7', '8', '9'}
     };
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            matriz[i][j] = valoresIniciais[i][j];
+        }
+    }
 
     printf("Escolha uma das opções para começar o jogo:\n1- X\n2- O\n");
     scanf(" %c", &jogadorUm); 
@@ -174,6 +201,12 @@ int main() {
             break;
         }
 
+        // Verifica se houve empate
+        if (verificarEmpate(matriz)) {
+            printf("O jogo terminou em empate!\n");
+            break;
+        }
+
         // Jogada do jogador 2
         posicaoJogadorDois(matriz, jogadorUm, jogadorDois);
         imprimirMatriz(matriz); // Imprime a matriz após o jogador dois jogar
@@ -184,8 +217,18 @@ int main() {
             break;
         }
 
-        jogadas++;
+        // Verifica se houve empate
+        if (verificarEmpate(matriz)) {
+            printf("O jogo terminou em empate!\n");
+            break;
+        }
     }
+
+    // Liberação da memória alocada
+    for (int i = 0; i < 3; i++) {
+        free(matriz[i]);
+    }
+    free(matriz);
 
     return 0;
 }
