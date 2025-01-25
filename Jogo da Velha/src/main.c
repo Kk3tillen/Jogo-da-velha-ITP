@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h> // Para usar srand e rand
-
-// Declaração da função tentativaDeBloqueio
+#include <time.h> 
 int tentativaDeBloqueio(char **matriz, char jogadorUm, char jogadorDois);
 
 void imprimirMatriz(char **matriz) {
@@ -122,27 +120,15 @@ int tentativaDeBloqueio(char **matriz, char jogadorUm, char jogadorDois) {
         return 1;
     }
     
-    // Se não houver jogada de bloqueio, retorna 0
     return 0;
-}
-
-int verificarEmpate(char **matriz) {
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            if (matriz[i][j] != 'X' && matriz[i][j] != 'O') {
-                return 0; // Ainda há posições vazias
-            }
-        }
-    }
-    return 1; // Todas as posições estão preenchidas (empate)
 }
 
 int main() {
     char jogadorUm;
     char jogadorDois;
     int ganhou = 0;
-    int jogadas = 0;
     int posicao = 0;
+    int jogadas = 0;
 
     // Inicializa o gerador de números aleatórios
     srand(time(NULL));
@@ -183,6 +169,8 @@ int main() {
     imprimirMatriz(matriz);
 
     while (1) {
+        
+
         printf("Escolha uma posição de 1 à 9: ");
         scanf("%d", &posicao);
 
@@ -202,11 +190,13 @@ int main() {
         }
 
         // Verifica se houve empate
-        if (verificarEmpate(matriz)) {
-            printf("O jogo terminou em empate!\n");
+        jogadas++;
+
+        if (jogadas >= 9) {
+            printf("O jogo empatou! :/");
             break;
         }
-
+        
         // Jogada do jogador 2
         posicaoJogadorDois(matriz, jogadorUm, jogadorDois);
         imprimirMatriz(matriz); // Imprime a matriz após o jogador dois jogar
@@ -217,13 +207,10 @@ int main() {
             break;
         }
 
-        // Verifica se houve empate
-        if (verificarEmpate(matriz)) {
-            printf("O jogo terminou em empate!\n");
-            break;
-        }
-    }
+        jogadas++;
 
+    }
+    
     // Liberação da memória alocada
     for (int i = 0; i < 3; i++) {
         free(matriz[i]);
@@ -231,4 +218,5 @@ int main() {
     free(matriz);
 
     return 0;
+
 }

@@ -1,7 +1,8 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 //cria a matriz com pontos
-void criarMatriz(int n, char matriz[n][n]) {
+void criarMatriz(int n, char **matriz) {
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             matriz[i][j] = '.';
@@ -10,7 +11,7 @@ void criarMatriz(int n, char matriz[n][n]) {
 }
 
 //imprime a matriz
-void imprimirMatriz(int n, char matriz[n][n]) { 
+void imprimirMatriz(int n, char **matriz) { 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             printf("%c ", matriz[i][j]);
@@ -22,30 +23,30 @@ void imprimirMatriz(int n, char matriz[n][n]) {
 
 // ==========================================================
 // funções de verificação:
-int verificaColuna(int n, int linha, char matriz[n][n]){
-    int R = 1;
-    for (int i = 0; i < n; i++){
-        if (matriz[i][linha] != '.'){
+// ==========================================================
+
+int verificaColuna(int n, int linha, char **matriz){
+    for (int i = 0; i < n; i++) {
+        if (matriz[i][linha] != '.') {
             return 0;
         }
     }
-    return R;
+    return 1;
 }
 
-int verificaLinha(int n, int coluna, char matriz[n][n]){
-    int R = 1;
-    for (int i = 0; i < n; i++){
-        if (matriz[coluna][i] != '.'){
+int verificaLinha(int n, int coluna, char **matriz){
+    for (int i = 0; i < n; i++) {
+        if (matriz[coluna][i] != '.') {
             return 0;
         }
     }
-    return R;
+    return 1;
 }
 
-int verificaDiagonal(int n, int linha, int coluna, char matriz[n][n]) {
-    for (int i = 0; i < n; i++){
+int verificaDiagonal(int n, int linha, int coluna, char **matriz) {
+    for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            if (matriz[i][j] == 'R' && (i - j) == (linha - coluna))  {
+            if (matriz[i][j] == 'R' && (i - j) == (linha - coluna)) {
                 return 0; 
             }
         }
@@ -62,7 +63,7 @@ int verificaDiagonal(int n, int linha, int coluna, char matriz[n][n]) {
     return 1;
 }
 
-int posicionarRainhas(int n, int linha, char matriz[n][n]) {
+int posicionarRainhas(int n, int linha, char **matriz) {
     if (linha >= n) {
         return 1;
     }
@@ -79,9 +80,9 @@ int posicionarRainhas(int n, int linha, char matriz[n][n]) {
     return 0;
 }
 
-int main(){
+int main() {
     int n;
-    while (1)  {
+    while (1) {
         printf("Insira o valor de N (deve ser maior que 3): ");
         scanf("%d", &n);
 
@@ -89,15 +90,26 @@ int main(){
             printf("O valor de N deve ser maior que 3!\n");
             continue; 
         }
-        char matriz[n][n];
+
+        // Alocação dinâmica de memória
+        char **matriz = (char **)malloc(n * sizeof(char *));
+        for (int i = 0; i < n; i++) {
+            matriz[i] = (char *)malloc(n * sizeof(char));
+        }
+
         criarMatriz(n, matriz);
 
         if (posicionarRainhas(n, 0, matriz)) {
             imprimirMatriz(n, matriz);
-        }
-        else {
+        } else {
             printf("Não foi possível encontrar uma solução para N = %d.\n", n);
         }
+
+        // Liberação da memória alocada
+        for (int i = 0; i < n; i++) {
+            free(matriz[i]);
+        }
+        free(matriz);
         break;
     }
 
